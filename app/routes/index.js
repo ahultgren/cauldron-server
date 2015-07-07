@@ -10,30 +10,14 @@ router.route('/')
   res.send('I\'m alive');
 });
 
-router.route('/players')
-.post((req, res, next) => {
-  playerService.create(req.body)
-  .then(data => res.send(data), next);
-})
-.get((req, res, next) => {
-  playerService.list()
-  .then(data => res.send(data), next);
-});
-
 router.route('/games')
-.post((req, res, next) => {
-  gameService.create(req.user, req.body)
-  .then(data => res.send(data), next);
-})
 .get((req, res, next) => {
-  gameService.list()
-  .then(data => res.send(data), next);
+  res.send(gameService.list());
 });
 
 router.route('/games/:game_id')
 .get((req, res, next) => {
-  gameService.get(req.params.game_id)
-  .then(data => res.send(data), next);
+  res.send(gameService.get(req.params.game_id));
 });
 
 module.exports = router;

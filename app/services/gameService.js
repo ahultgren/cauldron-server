@@ -1,62 +1,45 @@
 'use strict';
 
 var uuid = require('uuid');
+var R = require('ramda');
+var Game = require('../model/game');
 var games = new Map();
 
 exports.list = () => {
-  return Promise.resolve(Array.from(games.values()));
+  return Array.from(games.values()).map(({game_id, players, maxPlayers, started_at, rules}) => {
+    return {
+      game_id, maxPlayers, started_at, rules,
+      players: players.length,
+    };
+  });
 };
 
 exports.get = (gameId) => {
-  return Promise.resolve(games.get(gameId));
+  return games.get(gameId);
 };
 
-exports.create = (owner, {name, rules}) => {
-  var id = uuid.v4();
-
-  games.set(id, {
-    game_id: id,
-    name,
-    rules,
-    players: [owner],
-    owner,
-    state: 'created',
-    started_at: null,
-  });
-
-  return Promise.resolve();
+exports.create = (client) => {
+  var game = Game.create(client);
+  games.set(game.game_id, game);
+  return game;
 };
 
-exports.join = (gameId, playerId) => {
-  var game = games.get(gameId);
+exports.joinFullest = (client) => {
+  var game = R.pipe(
+    R.filter(game => game.maxPlayers > game.players.length),
+    R.sortBy(game => game.maxPlayers - game.players.length),
+    R.reverse,
+    R.head
+  )(Array.from(games.values()));
 
   if(!game) {
-    return Promise.reject();
+    game = exports.create(client);
   }
 
-  if(game.players.length >= game.rules.players) {
-    return Promise.reject();
-  }
-
-  game.players.push(playerId);
-
-  return Promise.resolve();
+  game.join(client);
+  return game;
 };
 
-exports.start = (id) => {
-  var game = games.get(id);
-
-  game.state = 'started';
-  game.started_at = Date.now();
-
-  return Promise.resolve();
+exports.delete = (game) => {
+  games.delete(game.game_id);
 };
-
-//## Demo
-exports.create('mr_andersen', {
-  name: 'Test game',
-  rules: {
-    players: 4,
-    map: 'one',
-  },
-});

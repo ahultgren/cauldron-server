@@ -4,18 +4,14 @@ var http = require('http');
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
-var WSS = require('ws').Server;
 var config = require('../config');
 var routes = require('./routes');
+var WSS = require('./ws');
 
 exports.start = () => {
   var app = express();
   var server = http.createServer(app);
-  var wss = new WSS({server});
-
-  wss.on('connection', (socket) => {
-    console.log('Connection', socket);
-  });
+  var wss = WSS.create(server);
 
   app.use(cors({
     origin: true,
