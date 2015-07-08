@@ -33,15 +33,12 @@ class SocketRouter {
   }
 
   receiveMessage (client, {type, data}) {
-    var playerId = client.player.player_id;
+    var playerId = client.player_id;
     var gameId;
 
     switch (type) {
       case 'player/update':
         client.game.updatePlayer(playerId, data);
-        break;
-      case 'player/spawn':
-        client.game.spawn(playerId, data);
         break;
     }
   }

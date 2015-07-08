@@ -20,8 +20,13 @@ class Game {
     this.rules = rules;
   }
 
-  broadcast (type, message) {
-    this.players.forEach(client => client.send(type, message));
+  broadcast (type, message, ignore) {
+    this.players.forEach((client) => {
+      if(client.player_id === ignore) {
+        return;
+      }
+      client.send(type, message)
+    });
   }
 
   join (client) {
@@ -44,6 +49,12 @@ class Game {
     }
 
     return !!index;
+  }
+
+  updatePlayer (player_id, data) {
+    // [TODO] Validate data
+    data.player_id = player_id;
+    this.broadcast('player/update', data, player_id);
   }
 
 }
