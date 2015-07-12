@@ -40,6 +40,9 @@ class SocketRouter {
       case 'player/update':
         client.game.updatePlayer(playerId, data);
         break;
+      case 'player/spawn':
+        client.game.spawn(playerId, data);
+        break;
     }
   }
 

@@ -57,6 +57,10 @@ class Game {
     this.broadcast('player/update', data, player_id);
   }
 
+  spawn (player_id, data) {
+    this.broadcast('game/spawn', data, player_id);
+  }
+
 }
 
 module.exports = Game;
