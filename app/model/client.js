@@ -12,6 +12,11 @@ class Client {
     this.player_id = uuid.v4();
     this.socket = socket;
     this.game = null;
+
+    socket.on('message', message => this.receiveMessage(JSON.parse(message)));
+    socket.on('close', () => this.game.leave(this));
+
+    this.send('game/joined', this.game.rules);
   }
 
   send (type, message = {}) {
@@ -22,6 +27,19 @@ class Client {
 
   joinGame (game) {
     this.game = game;
+  }
+
+  receiveMessage ({type, data}) {
+    var playerId = this.player_id;
+
+    switch (type) {
+      case 'player/update':
+        this.game.updatePlayer(playerId, data);
+        break;
+      case 'player/spawn':
+        this.game.spawn(playerId, data);
+        break;
+    }
   }
 
 }
