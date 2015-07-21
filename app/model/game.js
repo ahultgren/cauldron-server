@@ -2,6 +2,7 @@
 
 var uuid = require('uuid');
 var R = require('ramda');
+var cauldron = require('cauldron-core');
 var games = require('../services/gameService');
 
 class Game {
@@ -18,6 +19,16 @@ class Game {
     this.state = 'started';
     this.started_at = new Date();
     this.rules = rules;
+
+    var game = cauldron.Game.create();
+    game.addSystem(cauldron.systems.Collision.create());
+    game.addSystem(cauldron.systems.Movement.create());
+    game.addSystem(cauldron.systems.Parent.create());
+    game.addSystem(cauldron.systems.Factory.create());
+    game.addSystem(cauldron.systems.Expire.create());
+    game.start();
+
+    this.simulation = game;
   }
 
   broadcast (type, message, ignore) {
@@ -25,7 +36,7 @@ class Game {
       if(client.player_id === ignore) {
         return;
       }
-      client.send(type, message)
+      client.send(type, message);
     });
   }
 

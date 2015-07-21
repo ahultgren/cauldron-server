@@ -1,6 +1,5 @@
 'use strict';
 
-var uuid = require('uuid');
 var R = require('ramda');
 var Game = require('../model/game');
 var games = new Map();
@@ -25,19 +24,19 @@ exports.create = (client) => {
 };
 
 exports.joinFullest = (client) => {
-  var game = R.pipe(
+  var fullestGame = R.pipe(
     R.filter(game => game.maxPlayers > game.players.length),
     R.sortBy(game => game.maxPlayers - game.players.length),
     R.reverse,
     R.head
   )(Array.from(games.values()));
 
-  if(!game) {
-    game = exports.create(client);
+  if(!fullestGame) {
+    fullestGame = exports.create(client);
   }
 
-  game.join(client);
-  return game;
+  fullestGame.join(client);
+  return fullestGame;
 };
 
 exports.delete = (game) => {

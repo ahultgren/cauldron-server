@@ -34,7 +34,6 @@ class SocketRouter {
 
   receiveMessage (client, {type, data}) {
     var playerId = client.player_id;
-    var gameId;
 
     switch (type) {
       case 'player/update':

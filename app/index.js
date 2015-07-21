@@ -11,7 +11,8 @@ var WSS = require('./ws');
 exports.start = () => {
   var app = express();
   var server = http.createServer(app);
-  var wss = WSS.create(server);
+
+  WSS.create(server);
 
   app.use(cors({
     origin: true,
@@ -24,7 +25,7 @@ exports.start = () => {
     var auth = req.header('Authorization');
 
     if(auth) {
-      var [, username, token] = auth.match(/^Cauldron ([^=]+)=(.+)$/) || [];
+      var [, username/*, token*/] = auth.match(/^Cauldron ([^=]+)=(.+)$/) || [];
       //## Verify token
       req.user = username;
     }
