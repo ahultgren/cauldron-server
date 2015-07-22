@@ -1,6 +1,6 @@
 'use strict';
 
-var uuid = require('uuid');
+var playerFactory = require('cauldron-core/app/factories/player');
 
 class Client {
 
@@ -9,14 +9,13 @@ class Client {
   }
 
   constructor (socket) {
-    this.player_id = uuid.v4();
+    this.player = playerFactory();
+    this.player_id = this.player.id;
     this.socket = socket;
     this.game = null;
 
     socket.on('message', message => this.receiveMessage(JSON.parse(message)));
     socket.on('close', () => this.game.leave(this));
-
-    this.send('game/joined', this.game.rules);
   }
 
   send (type, message = {}) {
@@ -27,6 +26,7 @@ class Client {
 
   joinGame (game) {
     this.game = game;
+    this.send('game/joined', game.rules);
   }
 
   receiveMessage ({type, data}) {
@@ -34,12 +34,16 @@ class Client {
 
     switch (type) {
       case 'player/update':
-        this.game.updatePlayer(playerId, data);
+        this.update(data);
         break;
       case 'player/spawn':
         this.game.spawn(playerId, data);
         break;
     }
+  }
+
+  update (data) {
+    this.player.setComponents(data);
   }
 
 }

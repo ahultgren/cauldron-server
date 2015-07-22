@@ -16,7 +16,6 @@ class SocketRouter {
   }
 
   connection (socket) {
-    console.log('Connection');
     // [TODO] Authorize headers, get player session?
 
     // Join first available game

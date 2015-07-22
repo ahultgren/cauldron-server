@@ -4,6 +4,7 @@ var uuid = require('uuid');
 var R = require('ramda');
 var cauldron = require('cauldron-core');
 var games = require('../services/gameService');
+var ClientUpdater = require('../systems/clientUpdater');
 
 class Game {
 
@@ -26,6 +27,7 @@ class Game {
     game.addSystem(cauldron.systems.Parent.create());
     game.addSystem(cauldron.systems.Factory.create());
     game.addSystem(cauldron.systems.Expire.create());
+    game.addSystem(ClientUpdater.create(this));
     game.start();
 
     this.simulation = game;
@@ -41,15 +43,21 @@ class Game {
   }
 
   join (client) {
+    console.log('Join', client.player_id);
+
     this.players.push(client);
+    this.simulation.addEntity(client.player);
     client.joinGame(this);
   }
 
   leave (client) {
     var index = R.findIndex(R.propEq('player_id', client.player_id))(this.players);
 
-    if(index) {
+    if(index > -1) {
+      console.log('Leave', client.player_id);
+
       this.players.splice(index, 1);
+      this.simulation.removeEntity(client.player_id);
       this.broadcast('player/left', {
         player_id: client.player_id,
       });
@@ -65,7 +73,7 @@ class Game {
   updatePlayer (player_id, data) {
     // [TODO] Validate data
     data.player_id = player_id;
-    this.broadcast('player/update', data, player_id);
+    //this.broadcast('player/update', data, player_id);
   }
 
   spawn (player_id, data) {
