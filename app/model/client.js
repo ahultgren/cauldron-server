@@ -26,7 +26,10 @@ class Client {
 
   joinGame (game) {
     this.game = game;
-    this.send('game/joined', game.rules);
+    this.send('game/joined', {
+      rules: game.rules,
+      player: this.player.serialize(),
+    });
   }
 
   receiveMessage ({type, data}) {

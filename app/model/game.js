@@ -78,7 +78,6 @@ class Game {
   updatePlayer (player_id, data) {
     // [TODO] Validate data
     data.player_id = player_id;
-    //this.broadcast('player/update', data, player_id);
   }
 
   spawn (player_id, data) {
