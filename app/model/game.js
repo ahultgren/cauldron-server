@@ -5,6 +5,7 @@ var R = require('ramda');
 var cauldron = require('cauldron-core');
 var games = require('../services/gameService');
 var ClientUpdater = require('../systems/clientUpdater');
+var Score = require('../systems/score');
 var mapFactory = require('cauldron-core/app/factories/map');
 
 class Game {
@@ -28,6 +29,7 @@ class Game {
     game.addSystem(cauldron.systems.Parent.create());
     game.addSystem(cauldron.systems.Factory.create());
     game.addSystem(cauldron.systems.Expire.create());
+    game.addSystem(Score.create());
     game.addSystem(ClientUpdater.create(this));
 
     game.addEntity(mapFactory(this.rules.map));
@@ -81,8 +83,13 @@ class Game {
 
   spawn (player_id, data) {
     var entity = cauldron.Entity.fromData(data);
+
+    // [TODO] Remove this temporary fulhack when i've figured out how or how not to have consistent ids on clients and servers
+    if(entity.hasComponent('owner')) {
+      entity.getComponent('owner').ownerId = player_id;
+    }
+
     this.simulation.addEntity(entity);
-    //this.broadcast('game/spawn', data, player_id);
   }
 
 }
