@@ -5,6 +5,7 @@ var R = require('ramda');
 var cauldron = require('cauldron-core');
 var games = require('../services/gameService');
 var ClientUpdater = require('../systems/clientUpdater');
+var mapFactory = require('cauldron-core/app/factories/map');
 
 class Game {
 
@@ -28,6 +29,8 @@ class Game {
     game.addSystem(cauldron.systems.Factory.create());
     game.addSystem(cauldron.systems.Expire.create());
     game.addSystem(ClientUpdater.create(this));
+
+    game.addEntity(mapFactory(this.rules.map));
     game.start();
 
     this.simulation = game;
