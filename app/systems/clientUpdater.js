@@ -1,14 +1,12 @@
 'use strict';
 
-var map = (fn, iterable) => {
-  var result = [];
+var R = require('ramda');
+var filter = require('cauldron-core/app/utils/filter');
+var map = require('cauldron-core/app/utils/map');
 
-  for(let item of iterable) {
-    result.push(fn(item[1]));
-  }
-
-  return result;
-}
+var serialize = map(entity => entity.serialize());
+var collidable = filter(entity => entity.hasComponent('collision'));
+var broadcastable = R.compose(serialize, collidable);
 
 class ClientUpdater {
   static create (room) {
@@ -21,7 +19,7 @@ class ClientUpdater {
 
   tick (entities) {
     // [TODO] Observe/diff entities and their components to not spam all the data all the time
-    this.room.broadcast('game/updates', map(entity => entity.serialize(), entities));
+    this.room.broadcast('game/updates', broadcastable(entities));
   }
 }
 

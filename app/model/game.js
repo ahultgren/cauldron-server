@@ -77,7 +77,9 @@ class Game {
   }
 
   spawn (player_id, data) {
-    this.broadcast('game/spawn', data, player_id);
+    var entity = cauldron.Entity.fromData(data);
+    this.simulation.addEntity(entity);
+    //this.broadcast('game/spawn', data, player_id);
   }
 
 }
