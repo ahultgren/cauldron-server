@@ -6,6 +6,7 @@ var cauldron = require('cauldron-core');
 var games = require('../services/gameService');
 var ClientUpdater = require('../systems/clientUpdater');
 var Score = require('../systems/score');
+var Health = require('../systems/health');
 var mapFactory = require('cauldron-core/app/factories/map');
 
 class Game {
@@ -29,6 +30,7 @@ class Game {
     game.addSystem(cauldron.systems.Parent.create());
     game.addSystem(cauldron.systems.Factory.create());
     game.addSystem(cauldron.systems.Expire.create());
+    game.addSystem(Health.create());
     game.addSystem(Score.create());
     game.addSystem(ClientUpdater.create(this));
 
@@ -73,6 +75,10 @@ class Game {
     }
 
     return !!index;
+  }
+
+  getPlayer (player_id) {
+    return R.find(R.propEq('player_id', player_id), this.players);
   }
 
   updatePlayer (player_id, data) {
