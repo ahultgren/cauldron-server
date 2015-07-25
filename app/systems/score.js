@@ -16,9 +16,9 @@ class Score {
   tick (entities) {
     hasScore(entities)
     .forEach((entity) => {
-      this.mediator.triggered(`collision:${entity.id}`).forEach((e) => {
-        var hitBy = this.game.getEntity(e.hitBy);
-        var owner = hitBy && hitBy.getComponent('owner');
+      this.mediator.triggered(`death:${entity.id}`).forEach((e) => {
+        var killedBy = this.game.getEntity(e.killedBy);
+        var owner = killedBy && killedBy.getComponent('owner');
 
         if(!owner || owner.ownerId === entity.id) {
           return;

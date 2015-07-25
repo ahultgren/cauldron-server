@@ -16,14 +16,16 @@ class Health {
   tick (entities) {
     hasHealth(entities)
     .forEach((entity) => {
-      this.mediator.triggered(`collision:${entity.id}`).forEach(() => {
+      this.mediator.triggered(`collision:${entity.id}`).forEach((e) => {
         // [TODO] Check if hitBy has a damage component?
         var health = entity.getComponent('health');
         health.health--;
 
         if(health.health <= 0) {
           health.health = health.maxHealth;
-          this.mediator.emit(`death:${entity.id}`, {});
+          this.mediator.emit(`death:${entity.id}`, {
+            killedBy: e.hitBy,
+          });
         }
       });
     });
