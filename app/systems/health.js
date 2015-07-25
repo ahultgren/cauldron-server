@@ -17,9 +17,16 @@ class Health {
     hasHealth(entities)
     .forEach((entity) => {
       this.mediator.triggered(`collision:${entity.id}`).forEach((e) => {
-        // [TODO] Check if hitBy has a damage component?
         var health = entity.getComponent('health');
-        health.health--;
+        var hitBy = this.game.getEntity(e.hitBy);
+
+        if(!hitBy || !hitBy.hasComponent('damage')) {
+          return;
+        }
+
+        var damage = hitBy.getComponent('damage');
+
+        health.health -= damage.damage;
 
         if(health.health <= 0) {
           health.health = health.maxHealth;
