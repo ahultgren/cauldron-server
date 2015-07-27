@@ -8,10 +8,11 @@ var ClientUpdater = require('../systems/clientUpdater');
 var Score = require('../systems/score');
 var Health = require('../systems/health');
 var mapFactory = require('cauldron-core/app/factories/map');
+var filter = require('cauldron-core/app/utils/filter');
 
 class Game {
 
-  static create (client, rules = {map: 'one'}) {
+  static create (client, rules = {map: 'one', duration: 120}) {
     return new Game(client, rules);
   }
 
@@ -21,8 +22,8 @@ class Game {
     this.maxPlayers = 8;
     this.owner = client;
     this.state = 'started';
-    this.started_at = new Date();
     this.rules = rules;
+    this.rules.started_at = new Date();
 
     var game = cauldron.Game.create();
     game.addSystem(cauldron.systems.Collision.create());
@@ -38,6 +39,8 @@ class Game {
     game.start();
 
     this.simulation = game;
+
+    setTimeout(() => this.end(), this.rules.duration * 1000);
   }
 
   broadcast (type, message, ignore) {
@@ -62,6 +65,10 @@ class Game {
 
     if(index > -1) {
       console.log('Leave', client.player_id);
+
+      if(client.socket.readyState === client.socket.OPEN) {
+        client.socket.close();
+      }
 
       this.players.splice(index, 1);
       this.simulation.removeEntity(client.player_id);
@@ -95,6 +102,19 @@ class Game {
     }
 
     this.simulation.addEntity(entity);
+  }
+
+  leaderboard () {
+    return filter((entity) => entity.hasComponent('score'), this.simulation.entities)
+    .sort((a, b) => b.getComponent('score').score - a.getComponent('score').score)
+    .map(entity => ({id: entity.id, score: entity.getComponent('score').score}));
+  }
+
+  end () {
+    this.simulation.stop();
+    this.state = 'ended';
+    this.broadcast('game/end', {results: this.leaderboard()});
+    this.players.forEach(player => this.leave(player));
   }
 
 }
