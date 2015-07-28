@@ -48,7 +48,7 @@ class Client {
 
     switch (type) {
       case 'player/update':
-        this.update(data);
+        this.onUpdate(data);
         break;
       case 'player/spawn':
         this.game.spawn(playerId, data);
@@ -56,8 +56,9 @@ class Client {
     }
   }
 
-  update (data) {
-    this.player.setComponents(data);
+  onUpdate ({position, physics}) {
+    // Only accept position and physics updates from player
+    this.player.setComponents({position, physics});
   }
 
 }
