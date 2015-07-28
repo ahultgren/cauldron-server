@@ -3,12 +3,14 @@
 var uuid = require('uuid');
 var R = require('ramda');
 var cauldron = require('cauldron-core');
+var maps = require('cauldron-core/app/maps');
+var mapFactory = require('cauldron-core/app/factories/map');
+var powerupFactory = require('cauldron-core/app/factories/powerup');
+var filter = require('cauldron-core/app/utils/filter');
 var games = require('../services/gameService');
 var ClientUpdater = require('../systems/clientUpdater');
 var Score = require('../systems/score');
 var Health = require('../systems/health');
-var mapFactory = require('cauldron-core/app/factories/map');
-var filter = require('cauldron-core/app/utils/filter');
 
 class Game {
 
@@ -31,16 +33,19 @@ class Game {
     game.addSystem(cauldron.systems.Parent.create());
     game.addSystem(cauldron.systems.Factory.create());
     game.addSystem(cauldron.systems.Expire.create());
+    game.addSystem(cauldron.systems.Powerups.create());
     game.addSystem(Health.create());
     game.addSystem(Score.create());
     game.addSystem(ClientUpdater.create(this));
 
     game.addEntity(mapFactory(this.rules.map));
-    game.start();
 
+    maps[this.rules.map].powerupPoints.map(powerupFactory)
+    .forEach(entity => game.addEntity(entity));
     this.simulation = game;
 
     setTimeout(() => this.end(), this.rules.duration * 1000);
+    game.start();
   }
 
   broadcast (type, message, ignore) {
