@@ -34,6 +34,7 @@ class Game {
     game.addSystem(cauldron.systems.Factory.create());
     game.addSystem(cauldron.systems.Expire.create());
     game.addSystem(cauldron.systems.Powerups.create());
+    game.addSystem(cauldron.systems.Reactivate.create());
     game.addSystem(Health.create());
     game.addSystem(Score.create());
     game.addSystem(ClientUpdater.create(this));
