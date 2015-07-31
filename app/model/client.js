@@ -1,6 +1,7 @@
 'use strict';
 
 var playerFactory = require('cauldron-core/app/factories/player');
+var map = require('cauldron-core/app/utils/map');
 var maps = require('cauldron-core/app/maps');
 
 class Client {
@@ -32,10 +33,11 @@ class Client {
       rules: game.rules,
       player: this.player.serialize(),
     });
+    this.send('game/updates', map(entity => entity.serialize(), game.simulation.entities));
   }
 
-  setSpawnPosition (player, map) {
-    var mapData = maps[map];
+  setSpawnPosition (player, mapName) {
+    var mapData = maps[mapName];
     var [x, y] = mapData.spawnPoints[~~(mapData.spawnPoints.length * Math.random())];
     var position = player.getComponent('position');
 

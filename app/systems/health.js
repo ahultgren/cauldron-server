@@ -26,6 +26,7 @@ class Health {
 
         var damage = hitBy.getComponent('damage');
 
+        entity.touch('health');
         health.health -= damage.damage;
 
         if(health.health <= 0) {

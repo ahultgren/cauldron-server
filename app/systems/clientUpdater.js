@@ -5,9 +5,10 @@ var filter = require('cauldron-core/app/utils/filter');
 var map = require('cauldron-core/app/utils/map');
 var maps = require('cauldron-core/app/maps');
 
-var serialize = map(entity => entity.serialize());
+var serialize = map(entity => entity.serializeDirty());
 var collidable = filter(entity => entity.hasComponent('collision'));
-var broadcastable = R.compose(serialize, collidable);
+var dirty = filter(entity => entity.dirty);
+var broadcastable = R.compose(serialize, collidable, dirty);
 
 class ClientUpdater {
   static create (room) {

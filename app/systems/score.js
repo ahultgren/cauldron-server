@@ -24,6 +24,7 @@ class Score {
           return;
         }
 
+        entity.touch('score');
         entity.getComponent('score').score -= 1;
         this.game.getEntity(owner.ownerId).getComponent('score').score += 1;
       });
