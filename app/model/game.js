@@ -102,11 +102,6 @@ class Game {
   spawn (player_id, data) {
     var entity = cauldron.Entity.fromData(data);
 
-    // [TODO] Remove this temporary fulhack when i've figured out how or how not to have consistent ids on clients and servers
-    if(entity.hasComponent('owner')) {
-      entity.getComponent('owner').ownerId = player_id;
-    }
-
     this.simulation.addEntity(entity);
   }
 
