@@ -20,7 +20,6 @@ class ClientUpdater {
   }
 
   tick (entities) {
-    // [TODO] Observe/diff entities and their components to not spam all the data all the time
     this.room.broadcast('game/updates', broadcastable(entities));
 
     entities.forEach((entity) => {
